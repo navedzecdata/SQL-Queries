@@ -62,3 +62,26 @@ END;
 DECLARE @Status INT;
 EXEC @Status = CheckProductStock @ProductID = 1;
 PRINT @Status; 
+
+
+--A UDF that calculates the total order amount for a given order ID and returns value.
+
+
+
+CREATE FUNCTION GetOrderTotal
+    (@OrderID INT)
+RETURNS DECIMAL(18, 2)
+AS
+BEGIN
+    DECLARE @Total DECIMAL(18, 2);
+    SELECT @Total = SUM(UnitPrice * Quantity * (1 - Discount))
+    FROM [Order Details]
+    WHERE OrderID = @OrderID;
+
+    RETURN ISNULL(@Total, 0);
+END;
+
+--Execution
+
+SELECT dbo.GetOrderTotal(10248) AS TotalAmount;
+
